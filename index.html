@@ -100,6 +100,7 @@
 <div class="container">
   <h2>Relatório de Movimentações</h2>
   <button onclick="gerarPDF()">Gerar PDF</button>
+  <input type="text" id="filtroMovimento" class="filter" placeholder="Filtrar por nome, tipo ou data..." oninput="atualizarRelatorio()">
   <table>
     <thead>
       <tr>
@@ -219,12 +220,20 @@ function excluirMaterial(i) {
 }
 
 function atualizarRelatorio() {
+  const filtro = document.getElementById("filtroMovimento")?.value?.toLowerCase() || "";
   const corpo = document.getElementById("tabelaMovimentos");
   corpo.innerHTML = '';
-  movimentos.forEach(m => {
-    corpo.innerHTML += `<tr><td>${m.data}</td><td>${m.nome}</td><td>${m.tipo}</td><td>${m.quantidade}</td></tr>`;
-  });
+  movimentos
+    .filter(m =>
+      m.nome.toLowerCase().includes(filtro) ||
+      m.tipo.toLowerCase().includes(filtro) ||
+      m.data.toLowerCase().includes(filtro)
+    )
+    .forEach(m => {
+      corpo.innerHTML += `<tr><td>${m.data}</td><td>${m.nome}</td><td>${m.tipo}</td><td>${m.quantidade}</td></tr>`;
+    });
 }
+
 
 function gerarPDF() {
   const { jsPDF } = window.jspdf;
