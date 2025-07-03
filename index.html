@@ -48,13 +48,24 @@
     ul { list-style: none; padding-left: 0; margin-top: 10px; }
     ul li { margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
     .filter { width: 50%; margin: 10px 0; }
+
+    .btn-mini {
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  margin-left: 10px;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   </style>
 </head>
 <body>
 
 <h1>BOMBARDI CONTROL</h1>
 <button onclick="window.location.href='registro_entregas.html'" style="margin: 10px 0; background: #00ff88;">📦 Registrar Entregas</button>
-
 
 <div class="container">
   <h2>Cadastro de Categorias</h2>
@@ -71,6 +82,7 @@
   <button onclick="adicionarMaterial()">Adicionar Material</button>
   <ul id="listaMateriaisSimples"></ul>
 </div>
+
 <div class="container">
   <h2>Lista de Materiais</h2>
   <input type="text" id="filtroInput" class="filter" placeholder="Filtrar por nome..." oninput="atualizarListaMateriais()">
@@ -86,15 +98,9 @@
     <tbody id="tabelaMateriais"></tbody>
   </table>
 </div>
-    <tbody id="tabelaMovimentos"></tbody>
-  </table>
-</div>
-  <table>
-    <thead>      
-    </thead>
-    <tbody id="tabelaMovimentos"></tbody>
-  </table>
-</div>
+
+<!-- select usado para movimentação futura -->
+<select id="materialSelect" style="display: none;"></select>
 
 <script>
 let categorias = JSON.parse(localStorage.getItem('categorias') || '[]');
@@ -137,7 +143,7 @@ function atualizarCategorias() {
   lista.innerHTML = '';
   categorias.forEach((cat, i) => {
     select.innerHTML += `<option value="${cat}">${cat}</option>`;
-    lista.innerHTML += `<li>${cat} <button class='btn-delete' onclick='excluirCategoria(${i})'>Excluir</button></li>`;
+    lista.innerHTML += `<li>${cat}<button class='btn-delete btn-mini' onclick='excluirCategoria(${i})'>✖</button></li>`;
   });
 }
 
@@ -165,20 +171,6 @@ function atualizarMateriais() {
   atualizarListaMateriais();
 }
 
-function registrarMovimentacao() {
-  const index = document.getElementById("materialSelect").value;
-  const qtd = parseInt(document.getElementById("qtdMovimentacao").value);
-  const tipo = document.getElementById("tipoMovimentacao").value;
-  if (index === "" || isNaN(qtd) || qtd <= 0) return;
-  const material = materiais[index];
-  if (tipo === "saida" && material.quantidade < qtd) return alert("Estoque insuficiente");
-  material.quantidade += tipo === "entrada" ? qtd : -qtd;
-  movimentos.push({ data: new Date().toLocaleString(), nome: material.nome, tipo, quantidade: qtd });
-  salvarDados();
-  atualizarMateriais();
-  atualizarRelatorio();
-}
-
 function atualizarListaMateriais() {
   const filtro = document.getElementById("filtroInput").value.toLowerCase();
   const tbody = document.getElementById("tabelaMateriais");
@@ -187,7 +179,9 @@ function atualizarListaMateriais() {
     .filter(m => m.nome.toLowerCase().includes(filtro))
     .forEach((m, i) => {
       tbody.innerHTML += `<tr>
-        <td>${m.nome}</td><td>${m.categoria}</td><td>${m.quantidade}</td>
+        <td>${m.nome}</td>
+        <td>${m.categoria}</td>
+        <td>${m.quantidade}</td>
         <td><button class='btn-delete' onclick='excluirMaterial(${i})'>Excluir</button></td>
       </tr>`;
     });
@@ -202,50 +196,11 @@ function excluirMaterial(i) {
 }
 
 function atualizarRelatorio() {
-  const filtro = document.getElementById("filtroMovimento")?.value?.toLowerCase() || "";
-  const corpo = document.getElementById("tabelaMovimentos");
-  corpo.innerHTML = '';
-  movimentos
-    .filter(m =>
-      m.nome.toLowerCase().includes(filtro) ||
-      m.tipo.toLowerCase().includes(filtro) ||
-      m.data.toLowerCase().includes(filtro)
-    )
-    .forEach(m => {
-      corpo.innerHTML += `<tr><td>${m.data}</td><td>${m.nome}</td><td>${m.tipo}</td><td>${m.quantidade}</td></tr>`;
-    });
-}
-
-
-function gerarPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.setFontSize(18);
-  doc.text("Relatório de Movimentações", 14, 20);
-  const linhas = movimentos.map(m => [m.data, m.nome, m.tipo.toUpperCase(), m.quantidade]);
-  doc.autoTable({ head: [['Data', 'Material', 'Tipo', 'Quantidade']], body: linhas, startY: 30 });
-  doc.save("relatorio_movimentos.pdf");
+  // Aqui é para futura integração de relatório
 }
 
 atualizarCategorias();
 atualizarMateriais();
-atualizarRelatorio();
-function apagarRelatorio() {
-  if (confirm("Tem certeza que deseja apagar todo o relatório de movimentações?")) {
-    movimentos = [];
-    salvarDados();
-    atualizarRelatorio();
-  }
-}
-
-atualizarCategorias();
-atualizarMateriais();
-atualizarRelatorio();
 </script>
 </body>
 </html>
-
-</script>
-</body>
-</html>
-
