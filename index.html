@@ -14,7 +14,7 @@
       padding: 20px;
       min-height: 100vh;
     }
-    h1, h2 { color: #fcfcfc; margin-bottom: 10px; }
+    h1, h2 { color: #ffffff; margin-bottom: 10px; }
     .container {
       background-color: #1e1e1e;
       border: 1px solid #333;
@@ -29,29 +29,30 @@
     }
     input, select { background: #2c2c2c; color: #f0f0f0; }
     button {
-      background: #00ff6a; color: #000;
+      background: #ffffff; color: #000;
       font-weight: bold; cursor: pointer;
     }
-    button:hover { background: #315155; }
+    button:hover { background: #ffffff; }
     table {
       width: 100%; border-collapse: collapse; margin-top: 10px;
     }
     th, td {
       border: 1px solid #333; padding: 8px; text-align: left;
     }
-    th { background-color: #333; color: #00d4ff; }
+    th { background-color: #333; color: #ffffff; }
     .btn-delete {
       background: #ff4c4c; color: white; padding: 5px 10px;
       border-radius: 5px; cursor: pointer;
     }
     .btn-delete:hover { background: #b80000; }
-    ul { list-style: disc; padding-left: 20px; margin-top: 10px; }
+    ul { list-style: none; padding-left: 0; margin-top: 10px; }
+    ul li { margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
     .filter { width: 50%; margin: 10px 0; }
   </style>
 </head>
 <body>
 
-<h1>BOMBARD CONTROL</h1>
+<h1>BOMBARDI CONTROL</h1>
 
 <div class="container">
   <h2>Cadastro de Categorias</h2>
@@ -132,14 +133,28 @@ function adicionarCategoria() {
   atualizarCategorias();
 }
 
+function excluirCategoria(index) {
+  const nomeCat = categorias[index];
+  const usados = materiais.some(m => m.categoria === nomeCat);
+  if (usados) {
+    alert("Essa categoria está sendo usada por materiais e não pode ser excluída.");
+    return;
+  }
+  if (confirm("Deseja excluir essa categoria?")) {
+    categorias.splice(index, 1);
+    salvarDados();
+    atualizarCategorias();
+  }
+}
+
 function atualizarCategorias() {
   const select = document.getElementById("categoriaSelect");
   const lista = document.getElementById("listaCategorias");
   select.innerHTML = '<option value="">Selecione uma categoria</option>';
   lista.innerHTML = '';
-  categorias.forEach(cat => {
+  categorias.forEach((cat, i) => {
     select.innerHTML += `<option value="${cat}">${cat}</option>`;
-    lista.innerHTML += `<li>${cat}</li>`;
+    lista.innerHTML += `<li>${cat} <button class='btn-delete' onclick='excluirCategoria(${i})'>Excluir</button></li>`;
   });
 }
 
