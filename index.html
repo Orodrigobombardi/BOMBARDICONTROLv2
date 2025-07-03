@@ -113,6 +113,13 @@
     <tbody id="tabelaMovimentos"></tbody>
   </table>
 </div>
+<button onclick="apagarRelatorio()" class="btn-delete">Apagar Relatório</button>
+  <table>
+    <thead>      
+    </thead>
+    <tbody id="tabelaMovimentos"></tbody>
+  </table>
+</div>
 
 <script>
 let categorias = JSON.parse(localStorage.getItem('categorias') || '[]');
@@ -248,6 +255,22 @@ function gerarPDF() {
 atualizarCategorias();
 atualizarMateriais();
 atualizarRelatorio();
+function apagarRelatorio() {
+  if (confirm("Tem certeza que deseja apagar todo o relatório de movimentações?")) {
+    movimentos = [];
+    salvarDados();
+    atualizarRelatorio();
+  }
+}
+
+atualizarCategorias();
+atualizarMateriais();
+atualizarRelatorio();
 </script>
 </body>
 </html>
+
+</script>
+</body>
+</html>
+
