@@ -100,7 +100,6 @@
       color: #121214;
       transition: background-color 0.3s;
       user-select: none;
-      /* Pra garantir que fique do mesmo tamanho */
       min-width: 150px;
     }
 
@@ -130,6 +129,7 @@
       flex-grow: 1;
       overflow-y: auto;
       min-height: 250px;
+      max-height: 400px;
     }
 
     table {
@@ -176,23 +176,23 @@
       </select>
 
       <label for="quantity">Quantidade</label>
-      <input type="number" id="quantity" name="quantity" placeholder="Quantidade retirada" min="1" required />
+      <input type="number" id="quantity" required placeholder="Quantidade retirada" min="1" />
 
       <label for="receiver">Quem recebeu</label>
-      <input type="text" id="receiver" name="receiver" placeholder="Nome de quem recebeu" required autocomplete="off" />
+      <input type="text" id="receiver" required placeholder="Nome de quem recebeu" />
 
       <label for="location">Local da entrega</label>
-      <input type="text" id="location" name="location" placeholder="Local da entrega" required autocomplete="off" />
+      <input type="text" id="location" required placeholder="Local da entrega" />
 
       <label for="date">Data da Entrega</label>
-      <input type="date" id="date" name="date" required />
+      <input type="date" id="date" required />
 
       <button type="submit">Registrar Entrega</button>
     </form>
 
     <div class="buttons-row">
       <button id="generatePdfBtn">Gerar Relatório PDF</button>
-      <button id="goBackBtn" type="button">Voltar para Página Inicial</button>
+      <button id="goBackBtn">Voltar para Página Inicial</button>
     </div>
   </div>
 
@@ -209,29 +209,25 @@
           <th>Data</th>
         </tr>
       </thead>
-      <tbody>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <footer>
-    Desenvolvido por Rodrigo 💚
-  </footer>
+  <footer>Desenvolvido por Rodrigo 💚</footer>
 
-  <!-- jsPDF CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script>
     const { jsPDF } = window.jspdf;
 
-    const materialSelect = document.getElementById('materialSelect');
     const form = document.getElementById('deliveryForm');
+    const materialSelect = document.getElementById('materialSelect');
     const deliveriesTableBody = document.querySelector('#deliveriesTable tbody');
     const filterInput = document.getElementById('filterMaterial');
     const generatePdfBtn = document.getElementById('generatePdfBtn');
     const goBackBtn = document.getElementById('goBackBtn');
 
-    let deliveries = [];
+    let deliveries = JSON.parse(localStorage.getItem('deliveries')) || [];
 
     function formatDate(dateStr) {
       const d = new Date(dateStr);
@@ -250,97 +246,71 @@
         option.textContent = `${m.nome} (estoque: ${m.quantidade})`;
         materialSelect.appendChild(option);
       });
-      return materiais;
     }
 
-    function updateMaterialsInStorage(materiais) {
+    function updateMaterials(materiais) {
       localStorage.setItem('materiais', JSON.stringify(materiais));
+    }
+
+    function saveDeliveries() {
+      localStorage.setItem('deliveries', JSON.stringify(deliveries));
     }
 
     function renderList(filter = '') {
       deliveriesTableBody.innerHTML = '';
-      const filtered = deliveries.filter(d =>
-        d.material.toLowerCase().includes(filter.toLowerCase())
-      );
-      if (filtered.length === 0) {
+      const lista = deliveries.filter(d => d.material.toLowerCase().includes(filter.toLowerCase()));
+      if (lista.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         td.colSpan = 5;
-        td.style.textAlign = 'center';
-        td.style.padding = '20px';
         td.textContent = 'Nenhuma entrega registrada.';
+        td.style.textAlign = 'center';
         tr.appendChild(td);
         deliveriesTableBody.appendChild(tr);
         return;
       }
-      for (const delivery of filtered) {
+      lista.forEach(d => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${delivery.material}</td>
-          <td>${delivery.quantity}</td>
-          <td>${delivery.receiver}</td>
-          <td>${delivery.location}</td>
-          <td>${formatDate(delivery.date)}</td>
+          <td>${d.material}</td>
+          <td>${d.quantity}</td>
+          <td>${d.receiver}</td>
+          <td>${d.location}</td>
+          <td>${formatDate(d.date)}</td>
         `;
         deliveriesTableBody.appendChild(tr);
-      }
-    }
-
-    function addOrUpdateDelivery(newDelivery) {
-      const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
-      const matIndex = materiais.findIndex(m => m.nome.toLowerCase() === newDelivery.material.toLowerCase());
-
-      if(matIndex === -1) {
-        alert('Material não encontrado no estoque!');
-        return false;
-      }
-
-      if(materiais[matIndex].quantidade < newDelivery.quantity) {
-        alert(`Estoque insuficiente! Estoque atual: ${materiais[matIndex].quantidade}`);
-        return false;
-      }
-
-      materiais[matIndex].quantidade -= newDelivery.quantity;
-      updateMaterialsInStorage(materiais);
-
-      loadMaterials();
-
-      const idx = deliveries.findIndex(d =>
-        d.material.toLowerCase() === newDelivery.material.toLowerCase() &&
-        d.date === newDelivery.date &&
-        d.receiver.toLowerCase() === newDelivery.receiver.toLowerCase() &&
-        d.location.toLowerCase() === newDelivery.location.toLowerCase()
-      );
-
-      if (idx >= 0) {
-        deliveries[idx].quantity += newDelivery.quantity;
-      } else {
-        deliveries.push(newDelivery);
-      }
-      return true;
+      });
     }
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-
       const material = materialSelect.value;
-      const quantity = Number(form.quantity.value);
-      const receiver = form.receiver.value.trim();
-      const location = form.location.value.trim();
-      const date = form.date.value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const receiver = document.getElementById('receiver').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const date = document.getElementById('date').value;
 
-      if (!material || quantity <= 0 || !receiver || !location || !date) {
-        alert('Preencha todos os campos corretamente!');
+      const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
+      const index = materiais.findIndex(m => m.nome === material);
+
+      if (index === -1) {
+        alert("Material não encontrado.");
         return;
       }
 
-      const success = addOrUpdateDelivery({ material, quantity, receiver, location, date });
-      if(!success) return;
+      if (materiais[index].quantidade < quantity) {
+        alert(`Estoque insuficiente. Estoque atual: ${materiais[index].quantidade}`);
+        return;
+      }
 
+      materiais[index].quantidade -= quantity;
+      updateMaterials(materiais);
+      loadMaterials();
+
+      deliveries.push({ material, quantity, receiver, location, date });
+      saveDeliveries();
       renderList(filterInput.value);
-
       form.reset();
-      materialSelect.focus();
     });
 
     filterInput.addEventListener('input', () => {
@@ -348,47 +318,31 @@
     });
 
     generatePdfBtn.addEventListener('click', () => {
-      if(deliveries.length === 0) {
-        alert('Não há entregas para gerar relatório.');
+      if (deliveries.length === 0) {
+        alert('Não há entregas para gerar PDF.');
         return;
       }
 
       const doc = new jsPDF();
-
       doc.setFontSize(18);
       doc.text("Relatório de Entregas", 14, 20);
       doc.setFontSize(12);
       doc.text(`Gerado em: ${formatDate(new Date().toISOString())}`, 14, 28);
 
-      const columns = ["Material", "Quantidade", "Quem Recebeu", "Local", "Data"];
-      const rows = deliveries.map(d => [
-        d.material,
-        d.quantity.toString(),
-        d.receiver,
-        d.location,
-        formatDate(d.date)
-      ]);
+      const cols = ["Material", "Qtd", "Recebeu", "Local", "Data"];
+      let y = 40;
 
-      let startY = 35;
-      const lineHeight = 8;
-      const marginLeft = 14;
-
-      columns.forEach((col, i) => {
-        doc.setFont(undefined, 'bold');
-        doc.text(col, marginLeft + i*40, startY);
-      });
+      doc.setFont(undefined, 'bold');
+      cols.forEach((c, i) => doc.text(c, 14 + i * 35, y));
       doc.setFont(undefined, 'normal');
+      y += 10;
 
-      startY += lineHeight;
-
-      rows.forEach(row => {
-        row.forEach((cell, i) => {
-          doc.text(cell, marginLeft + i*40, startY);
-        });
-        startY += lineHeight;
-        if (startY > 280) {
-          doc.addPage();
-          startY = 20;
+      deliveries.forEach(d => {
+        const data = [d.material, d.quantity.toString(), d.receiver, d.location, formatDate(d.date)];
+        data.forEach((t, i) => doc.text(t, 14 + i * 35, y));
+        y += 10;
+        if (y > 280) {
+          doc.addPage(); y = 20;
         }
       });
 
@@ -402,6 +356,5 @@
     loadMaterials();
     renderList();
   </script>
-
 </body>
 </html>
