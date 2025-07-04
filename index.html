@@ -165,7 +165,6 @@
       <option value="">Todas as Categorias</option>
     </select>
   </div>
-  <!-- Envolvendo a tabela num wrapper com scroll -->
   <div id="tabelaScrollWrapper">
     <table>
       <thead>
@@ -190,6 +189,17 @@
     <div class="modal-buttons">
       <button onclick="adicionarCategoria()">Salvar</button>
       <button onclick="fecharModal('modalCategoriaNovo')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalEditarCategoria">
+  <div class="modal-content">
+    <h3>Editar Categoria</h3>
+    <input type="text" id="categoriaEditarInput" placeholder="Novo nome da categoria" />
+    <div class="modal-buttons">
+      <button onclick="salvarEdicaoCategoria()">Salvar</button>
+      <button onclick="fecharModal('modalEditarCategoria')">Cancelar</button>
     </div>
   </div>
 </div>
@@ -230,7 +240,8 @@ function salvarDados() {
 
 function adicionarCategoria() {
   const nome = document.getElementById("categoriaInput").value.trim();
-  if (!nome || categorias.includes(nome)) return;
+  if (!nome) return alert("Digite um nome para a categoria");
+  if (categorias.includes(nome)) return alert("Categoria já existe");
   categorias.push(nome);
   document.getElementById("categoriaInput").value = '';
   salvarDados();
@@ -246,7 +257,7 @@ function adicionarMaterial() {
   const nome = document.getElementById("materialInput").value.trim();
   const categoria = document.getElementById("categoriaSelect").value;
   const quantidade = parseInt(document.getElementById("quantidadeInput").value);
-  if (!nome || !categoria || isNaN(quantidade)) return;
+  if (!nome || !categoria || isNaN(quantidade)) return alert("Preencha todos os campos corretamente");
   materiais.push({ nome, categoria, quantidade });
   document.getElementById("materialInput").value = '';
   document.getElementById("quantidadeInput").value = '';
@@ -258,6 +269,8 @@ function adicionarMaterial() {
   const listaSimples = document.getElementById("listaMateriaisSimples");
   listaSimples.scrollTop = listaSimples.scrollHeight;
 }
+
+let categoriaEditIndex = null;
 
 function atualizarCategorias() {
   const select = document.getElementById("categoriaSelect");
@@ -281,9 +294,63 @@ function atualizarCategorias() {
     lista.innerHTML = '';
     categorias
       .filter(cat => cat.toLowerCase().includes(filtroCatNome))
-      .forEach(cat => {
-        lista.innerHTML += `<li>${cat}</li>`;
+      .forEach((cat, i) => {
+        lista.innerHTML += `
+          <li>
+            <span>${cat}</span>
+            <div>
+              <button class="btn-edit btn-mini" onclick="abrirModalEditarCategoria(${i})">✏️</button>
+              <button class="btn-delete btn-mini" onclick="excluirCategoria(${i})">✖</button>
+            </div>
+          </li>`;
       });
+  }
+}
+
+function abrirModalEditarCategoria(index) {
+  categoriaEditIndex = index;
+  document.getElementById('categoriaEditarInput').value = categorias[index];
+  document.getElementById('modalEditarCategoria').style.display = 'flex';
+}
+
+function salvarEdicaoCategoria() {
+  const novoNome = document.getElementById('categoriaEditarInput').value.trim();
+  if (!novoNome) {
+    alert('O nome da categoria não pode ficar vazio.');
+    return;
+  }
+  if (categorias.includes(novoNome) && novoNome !== categorias[categoriaEditIndex]) {
+    alert('Já existe uma categoria com esse nome.');
+    return;
+  }
+  const antigoNome = categorias[categoriaEditIndex];
+  categorias[categoriaEditIndex] = novoNome;
+
+  // Atualizar materiais com o nome antigo da categoria
+  materiais.forEach(m => {
+    if (m.categoria === antigoNome) {
+      m.categoria = novoNome;
+    }
+  });
+
+  salvarDados();
+  atualizarCategorias();
+  atualizarMateriais();
+  fecharModal('modalEditarCategoria');
+  categoriaEditIndex = null;
+}
+
+function excluirCategoria(index) {
+  const categoria = categorias[index];
+  const temMaterial = materiais.some(m => m.categoria === categoria);
+  if (temMaterial) {
+    alert('Não é possível excluir esta categoria porque há materiais usando ela.');
+    return;
+  }
+  if (confirm(`Tem certeza que deseja excluir a categoria "${categoria}"?`)) {
+    categorias.splice(index, 1);
+    salvarDados();
+    atualizarCategorias();
   }
 }
 

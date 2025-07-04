@@ -14,12 +14,10 @@
       flex-direction: column;
       box-sizing: border-box;
     }
-
     body {
       padding: 40px 60px;
       font-size: 18px;
     }
-
     h1 {
       color: #1d703a;
       margin-bottom: 25px;
@@ -27,7 +25,6 @@
       user-select: none;
       font-size: 2.8rem;
     }
-
     .form-container {
       background: #202024;
       padding: 30px 35px;
@@ -36,14 +33,12 @@
       margin: 0 auto 30px auto;
       box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
     }
-
     label {
       display: block;
       margin-bottom: 8px;
       font-weight: 700;
       font-size: 1.1rem;
     }
-
     select, input {
       width: 100%;
       padding: 14px 12px;
@@ -55,12 +50,10 @@
       color: #e1e1e6;
       transition: background-color 0.3s;
     }
-
     select:focus, input:focus {
       outline: 3px solid #4ade80;
       background-color: #202024;
     }
-
     button[type="submit"] {
       background-color: #254c2d;
       border: none;
@@ -74,11 +67,9 @@
       transition: background-color 0.3s;
       margin-top: 15px;
     }
-
     button[type="submit"]:hover {
       background-color: #19af2b;
     }
-
     .buttons-row {
       max-width: 1000px;
       margin: 0 auto 40px auto;
@@ -86,7 +77,6 @@
       justify-content: space-between;
       gap: 15px;
     }
-
     .buttons-row button {
       flex: 1;
       margin-top: 0;
@@ -102,11 +92,9 @@
       user-select: none;
       min-width: 150px;
     }
-
     .buttons-row button:hover {
       background-color: #161817;
     }
-
     #filterMaterial {
       max-width: 1000px;
       margin: 0 auto 25px auto;
@@ -118,7 +106,6 @@
       color: #e1e1e6;
       font-size: 1.2rem;
     }
-
     .list-container {
       max-width: 1000px;
       margin: 0 auto;
@@ -131,20 +118,17 @@
       min-height: 250px;
       max-height: 400px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       color: #e1e1e6;
       font-size: 1.1rem;
     }
-
     th, td {
       padding: 16px 12px;
       border-bottom: 1px solid #29292e;
       text-align: left;
     }
-
     th {
       background-color: #274b34;
       color: #121214;
@@ -153,7 +137,6 @@
       z-index: 1;
       font-weight: 700;
     }
-
     footer {
       margin-top: auto;
       text-align: center;
@@ -165,39 +148,27 @@
   </style>
 </head>
 <body>
-
   <h1>📦 Registro de Entregas</h1>
-
   <div class="form-container">
     <form id="deliveryForm">
       <label for="materialSelect">Material</label>
-      <select id="materialSelect" required>
-        <option value="" disabled selected>Selecione o material</option>
-      </select>
-
+      <select id="materialSelect" required></select>
       <label for="quantity">Quantidade</label>
       <input type="number" id="quantity" required placeholder="Quantidade retirada" min="1" />
-
       <label for="receiver">Quem recebeu</label>
       <input type="text" id="receiver" required placeholder="Nome de quem recebeu" />
-
       <label for="location">Local da entrega</label>
       <input type="text" id="location" required placeholder="Local da entrega" />
-
       <label for="date">Data da Entrega</label>
       <input type="date" id="date" required />
-
       <button type="submit">Registrar Entrega</button>
     </form>
-
     <div class="buttons-row">
       <button id="generatePdfBtn">Gerar Relatório PDF</button>
       <button id="goBackBtn">Voltar para Página Inicial</button>
     </div>
   </div>
-
   <input type="text" id="filterMaterial" placeholder="Filtrar por material..." />
-
   <div class="list-container">
     <table id="deliveriesTable">
       <thead>
@@ -212,31 +183,21 @@
       <tbody></tbody>
     </table>
   </div>
-
   <footer>Desenvolvido por Rodrigo 💚</footer>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <script>
     const { jsPDF } = window.jspdf;
-
     const form = document.getElementById('deliveryForm');
     const materialSelect = document.getElementById('materialSelect');
     const deliveriesTableBody = document.querySelector('#deliveriesTable tbody');
     const filterInput = document.getElementById('filterMaterial');
     const generatePdfBtn = document.getElementById('generatePdfBtn');
     const goBackBtn = document.getElementById('goBackBtn');
-
     let deliveries = JSON.parse(localStorage.getItem('deliveries')) || [];
-
     function formatDate(dateStr) {
       const d = new Date(dateStr);
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      return `${day}/${month}/${year}`;
+      return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     }
-
     function loadMaterials() {
       const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
       materialSelect.innerHTML = '<option value="" disabled selected>Selecione o material</option>';
@@ -247,26 +208,17 @@
         materialSelect.appendChild(option);
       });
     }
-
     function updateMaterials(materiais) {
       localStorage.setItem('materiais', JSON.stringify(materiais));
     }
-
     function saveDeliveries() {
       localStorage.setItem('deliveries', JSON.stringify(deliveries));
     }
-
     function renderList(filter = '') {
       deliveriesTableBody.innerHTML = '';
       const lista = deliveries.filter(d => d.material.toLowerCase().includes(filter.toLowerCase()));
       if (lista.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 5;
-        td.textContent = 'Nenhuma entrega registrada.';
-        td.style.textAlign = 'center';
-        tr.appendChild(td);
-        deliveriesTableBody.appendChild(tr);
+        deliveriesTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center">Nenhuma entrega registrada.</td></tr>';
         return;
       }
       lista.forEach(d => {
@@ -276,12 +228,10 @@
           <td>${d.quantity}</td>
           <td>${d.receiver}</td>
           <td>${d.location}</td>
-          <td>${formatDate(d.date)}</td>
-        `;
+          <td>${formatDate(d.date)}</td>`;
         deliveriesTableBody.appendChild(tr);
       });
     }
-
     form.addEventListener('submit', e => {
       e.preventDefault();
       const material = materialSelect.value;
@@ -289,70 +239,42 @@
       const receiver = document.getElementById('receiver').value.trim();
       const location = document.getElementById('location').value.trim();
       const date = document.getElementById('date').value;
-
       const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
       const index = materiais.findIndex(m => m.nome === material);
-
-      if (index === -1) {
-        alert("Material não encontrado.");
-        return;
-      }
-
-      if (materiais[index].quantidade < quantity) {
-        alert(`Estoque insuficiente. Estoque atual: ${materiais[index].quantidade}`);
-        return;
-      }
-
+      if (index === -1) return alert("Material não encontrado.");
+      if (materiais[index].quantidade < quantity) return alert(`Estoque insuficiente. Estoque atual: ${materiais[index].quantidade}`);
       materiais[index].quantidade -= quantity;
       updateMaterials(materiais);
       loadMaterials();
-
       deliveries.push({ material, quantity, receiver, location, date });
       saveDeliveries();
       renderList(filterInput.value);
       form.reset();
     });
-
-    filterInput.addEventListener('input', () => {
-      renderList(filterInput.value);
-    });
-
+    filterInput.addEventListener('input', () => renderList(filterInput.value));
     generatePdfBtn.addEventListener('click', () => {
-      if (deliveries.length === 0) {
-        alert('Não há entregas para gerar PDF.');
-        return;
-      }
-
+      if (!deliveries.length) return alert('Não há entregas para gerar PDF.');
       const doc = new jsPDF();
       doc.setFontSize(18);
       doc.text("Relatório de Entregas", 14, 20);
       doc.setFontSize(12);
       doc.text(`Gerado em: ${formatDate(new Date().toISOString())}`, 14, 28);
-
       const cols = ["Material", "Qtd", "Recebeu", "Local", "Data"];
       let y = 40;
-
       doc.setFont(undefined, 'bold');
       cols.forEach((c, i) => doc.text(c, 14 + i * 35, y));
       doc.setFont(undefined, 'normal');
       y += 10;
-
       deliveries.forEach(d => {
-        const data = [d.material, d.quantity.toString(), d.receiver, d.location, formatDate(d.date)];
-        data.forEach((t, i) => doc.text(t, 14 + i * 35, y));
+        [d.material, d.quantity, d.receiver, d.location, formatDate(d.date)].forEach((t, i) => {
+          doc.text(String(t), 14 + i * 35, y);
+        });
         y += 10;
-        if (y > 280) {
-          doc.addPage(); y = 20;
-        }
+        if (y > 280) { doc.addPage(); y = 20; }
       });
-
       doc.save("relatorio_entregas.pdf");
     });
-
-    goBackBtn.addEventListener('click', () => {
-      window.location.href = 'index.html';
-    });
-
+    goBackBtn.addEventListener('click', () => window.location.href = 'index.html');
     loadMaterials();
     renderList();
   </script>
