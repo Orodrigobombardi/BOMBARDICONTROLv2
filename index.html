@@ -91,6 +91,31 @@
       gap: 10px;
       margin-top: 10px;
     }
+
+    /* ADICIONADO: altura fixa e scroll para listas e tabela */
+    #listaCategorias, #listaMateriaisSimples {
+      max-height: 150px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    #tabelaMateriais {
+      display: block;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #333;
+    }
+
+    #tabelaMateriais thead, #tabelaMateriais tbody, #tabelaMateriais tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    #tabelaMateriais thead {
+      width: calc(100% - 17px);
+      display: table-header-group;
+    }
   </style>
 </head>
 <body>

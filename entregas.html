@@ -2,378 +2,406 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Área de Entregas - Bombardi Control</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <title>📦 Registro de Entregas</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: #f0f0f0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    h1, h2 { color: #ffffff; margin-bottom: 10px; }
-    .container {
-      background-color: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    input, select, textarea, button {
-      padding: 10px; margin: 5px 0; width: 100%;
-      border-radius: 5px; font-size: 16px;
-      border: none;
-    }
-    input, select, textarea { background: #2c2c2c; color: #f0f0f0; resize: vertical; }
-    button {
-      background: #00ff88; color: #000;
-      font-weight: bold; cursor: pointer;
-    }
-    button:hover {
-      background: #00cc6a;
-    }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #333; padding: 8px; text-align: left;
-    }
-    th {
-      background-color: #333; color: #ffffff;
-    }
-    .btn-mini {
-      width: 25px;
-      height: 25px;
-      margin-left: 5px;
-      font-size: 14px;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-      background: #ff4c4c;
-      color: #fff;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn-mini:hover {
-      background: #b80000;
-    }
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-    .modal-content {
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 20px;
-      width: 320px;
-      box-shadow: 0 0 10px #000;
-    }
-    .modal-content h3 {
-      margin-bottom: 10px;
-      color: #00ff88;
-    }
-    .modal-buttons {
+    html, body {
+      margin: 0; padding: 0;
+      height: 100vh; width: 100vw;
+      background-color: #121214;
+      color: #e1e1e6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 40px 60px;
+      font-size: 18px;
+    }
+
+    h1 {
+      color: #1d703a;
+      margin-bottom: 25px;
+      text-align: center;
+      user-select: none;
+      font-size: 2.8rem;
+    }
+
+    .form-container {
+      background: #202024;
+      padding: 30px 35px;
+      border-radius: 10px;
+      max-width: 1000px;
+      margin: 0 auto 30px auto;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px 12px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1.2rem;
+      background-color: #29292e;
+      color: #e1e1e6;
+      transition: background-color 0.3s;
+    }
+
+    select:focus, input:focus {
+      outline: 3px solid #4ade80;
+      background-color: #202024;
+    }
+
+    button[type="submit"] {
+      background-color: #254c2d;
+      border: none;
+      color: #ffffff;
+      font-weight: 800;
+      padding: 16px 0;
+      border-radius: 10px;
+      width: 100%;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
       margin-top: 15px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #19af2b;
+    }
+
+    .buttons-row {
+      max-width: 1000px;
+      margin: 0 auto 40px auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .buttons-row button {
+      flex: 1;
+      margin-top: 0;
+      padding: 16px 0;
+      font-size: 1.4rem;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      font-weight: 800;
+      background-color: #1a5831;
+      color: #121214;
+      transition: background-color 0.3s;
+      user-select: none;
+      /* Pra garantir que fique do mesmo tamanho */
+      min-width: 150px;
+    }
+
+    .buttons-row button:hover {
+      background-color: #161817;
+    }
+
+    #filterMaterial {
+      max-width: 1000px;
+      margin: 0 auto 25px auto;
+      display: block;
+      padding: 14px 12px;
+      border-radius: 8px;
+      border: none;
+      background-color: #29292e;
+      color: #e1e1e6;
+      font-size: 1.2rem;
+    }
+
+    .list-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #202024;
+      border-radius: 10px;
+      padding: 25px 30px;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+      flex-grow: 1;
+      overflow-y: auto;
+      min-height: 250px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #e1e1e6;
+      font-size: 1.1rem;
+    }
+
+    th, td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #29292e;
+      text-align: left;
+    }
+
+    th {
+      background-color: #274b34;
+      color: #121214;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 18px 0;
+      font-size: 16px;
+      color: #36965acc;
+      user-select: none;
     }
   </style>
 </head>
 <body>
 
-<h1>🚚 Área de Entregas</h1>
-<button onclick="window.location.href='index.html'" style="margin-bottom: 20px; background: #00ff88;">🔙 Voltar para Estoque</button>
+  <h1>📦 Registro de Entregas</h1>
 
-<div class="container">
-  <h2>Cadastrar Entrega</h2>
-  <label for="materialSelect">Material:</label>
-  <select id="materialSelect"></select>
+  <div class="form-container">
+    <form id="deliveryForm">
+      <label for="materialSelect">Material</label>
+      <select id="materialSelect" required>
+        <option value="" disabled selected>Selecione o material</option>
+      </select>
 
-  <label for="quantidadeInput">Quantidade:</label>
-  <input type="number" id="quantidadeInput" min="1" placeholder="Quantidade retirada">
+      <label for="quantity">Quantidade</label>
+      <input type="number" id="quantity" name="quantity" placeholder="Quantidade retirada" min="1" required />
 
-  <label for="destinoInput">Destino da entrega:</label>
-  <input type="text" id="destinoInput" placeholder="Local da entrega">
+      <label for="receiver">Quem recebeu</label>
+      <input type="text" id="receiver" name="receiver" placeholder="Nome de quem recebeu" required autocomplete="off" />
 
-  <label for="recebedorInput">Recebedor:</label>
-  <input type="text" id="recebedorInput" placeholder="Nome do recebedor">
+      <label for="location">Local da entrega</label>
+      <input type="text" id="location" name="location" placeholder="Local da entrega" required autocomplete="off" />
 
-  <label for="obsInput">Observações:</label>
-  <textarea id="obsInput" rows="3" placeholder="Observações"></textarea>
+      <label for="date">Data da Entrega</label>
+      <input type="date" id="date" name="date" required />
 
-  <button onclick="cadastrarEntrega()">Salvar Entrega</button>
-</div>
+      <button type="submit">Registrar Entrega</button>
+    </form>
 
-<div class="container">
-  <h2>Relatório de Entregas</h2>
-  <button onclick="gerarPDF()" style="background:#00cc6a; margin-bottom:10px;">📄 Gerar PDF</button>
-  <table>
-    <thead>
-      <tr>
-        <th>Material</th>
-        <th>Quantidade</th>
-        <th>Destino</th>
-        <th>Recebedor</th>
-        <th>Observações</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="tabelaEntregas"></tbody>
-  </table>
-</div>
-
-<!-- Modal Edição -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h3>Editar Entrega</h3>
-
-    <label for="editMaterialSelect">Material:</label>
-    <select id="editMaterialSelect"></select>
-
-    <label for="editQuantidadeInput">Quantidade:</label>
-    <input type="number" id="editQuantidadeInput" min="1">
-
-    <label for="editDestinoInput">Destino:</label>
-    <input type="text" id="editDestinoInput">
-
-    <label for="editRecebedorInput">Recebedor:</label>
-    <input type="text" id="editRecebedorInput">
-
-    <label for="editObsInput">Observações:</label>
-    <textarea id="editObsInput" rows="3"></textarea>
-
-    <div class="modal-buttons">
-      <button onclick="salvarEdicao()">Salvar</button>
-      <button onclick="fecharModal()">Cancelar</button>
+    <div class="buttons-row">
+      <button id="generatePdfBtn">Gerar Relatório PDF</button>
+      <button id="goBackBtn" type="button">Voltar para Página Inicial</button>
     </div>
   </div>
-</div>
 
-<script>
-  let materiais = JSON.parse(localStorage.getItem('materiais') || '[]');
-  let entregas = JSON.parse(localStorage.getItem('entregas') || '[]');
+  <input type="text" id="filterMaterial" placeholder="Filtrar por material..." />
 
-  let indexEdicao = null;
+  <div class="list-container">
+    <table id="deliveriesTable">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Quantidade</th>
+          <th>Quem recebeu</th>
+          <th>Local</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
-  // Preenche select de materiais (normal e modal)
-  function preencherSelects() {
-    const select = document.getElementById('materialSelect');
-    const editSelect = document.getElementById('editMaterialSelect');
-    select.innerHTML = '<option value="">Selecione um material</option>';
-    editSelect.innerHTML = '<option value="">Selecione um material</option>';
-    materiais.forEach((m, i) => {
-      const option = `<option value="${i}">${m.nome} (${m.quantidade})</option>`;
-      select.innerHTML += option;
-      editSelect.innerHTML += option;
-    });
-  }
+  <footer>
+    Desenvolvido por Rodrigo 💚
+  </footer>
 
-  function salvarMateriais() {
-    localStorage.setItem('materiais', JSON.stringify(materiais));
-  }
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  function salvarEntregas() {
-    localStorage.setItem('entregas', JSON.stringify(entregas));
-  }
-
-  // Cadastra entrega e atualiza estoque
-  function cadastrarEntrega() {
-    const materialIndex = document.getElementById('materialSelect').value;
-    const qtd = parseInt(document.getElementById('quantidadeInput').value);
-    const destino = document.getElementById('destinoInput').value.trim();
-    const recebedor = document.getElementById('recebedorInput').value.trim();
-    const obs = document.getElementById('obsInput').value.trim();
-
-    if (materialIndex === '' || isNaN(qtd) || qtd <= 0 || !destino || !recebedor) {
-      alert('Preencha todos os campos corretamente.');
-      return;
-    }
-
-    const material = materiais[materialIndex];
-
-    if (material.quantidade < qtd) {
-      alert('Quantidade insuficiente no estoque!');
-      return;
-    }
-
-    // Atualiza estoque
-    material.quantidade -= qtd;
-    salvarMateriais();
-
-    // Adiciona entrega
-    entregas.push({
-      materialNome: material.nome,
-      materialIndex,
-      quantidade: qtd,
-      destino,
-      recebedor,
-      obs,
-      data: new Date().toLocaleString()
-    });
-    salvarEntregas();
-    limparCampos();
-    listarEntregas();
-    preencherSelects();
-  }
-
-  // Limpa campos do formulário
-  function limparCampos() {
-    document.getElementById('materialSelect').value = '';
-    document.getElementById('quantidadeInput').value = '';
-    document.getElementById('destinoInput').value = '';
-    document.getElementById('recebedorInput').value = '';
-    document.getElementById('obsInput').value = '';
-  }
-
-  // Lista entregas na tabela
-  function listarEntregas() {
-    const tbody = document.getElementById('tabelaEntregas');
-    tbody.innerHTML = '';
-    entregas.forEach((e, i) => {
-      tbody.innerHTML += `<tr>
-        <td>${e.materialNome}</td>
-        <td>${e.quantidade}</td>
-        <td>${e.destino}</td>
-        <td>${e.recebedor}</td>
-        <td>${e.obs}</td>
-        <td>
-          <button class="btn-mini" onclick="abrirModalEdicao(${i})">✏️</button>
-          <button class="btn-mini" onclick="excluirEntrega(${i})">✖</button>
-        </td>
-      </tr>`;
-    });
-  }
-
-  // Modal de edição
-  function abrirModalEdicao(i) {
-    indexEdicao = i;
-    const e = entregas[i];
-
-    // Preencher modal com dados atuais
-    const editMaterialSelect = document.getElementById('editMaterialSelect');
-    editMaterialSelect.value = materiais.findIndex(m => m.nome === e.materialNome);
-    document.getElementById('editQuantidadeInput').value = e.quantidade;
-    document.getElementById('editDestinoInput').value = e.destino;
-    document.getElementById('editRecebedorInput').value = e.recebedor;
-    document.getElementById('editObsInput').value = e.obs;
-
-    document.getElementById('modal').style.display = 'flex';
-  }
-
-  // Fecha modal
-  function fecharModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
-
-  // Salva edição e atualiza estoque
-  function salvarEdicao() {
-    const e = entregas[indexEdicao];
-
-    const novoMaterialIndex = document.getElementById('editMaterialSelect').value;
-    const novaQtd = parseInt(document.getElementById('editQuantidadeInput').value);
-    const novoDestino = document.getElementById('editDestinoInput').value.trim();
-    const novoRecebedor = document.getElementById('editRecebedorInput').value.trim();
-    const novaObs = document.getElementById('editObsInput').value.trim();
-
-    if (novoMaterialIndex === '' || isNaN(novaQtd) || novaQtd <= 0 || !novoDestino || !novoRecebedor) {
-      alert('Preencha todos os campos corretamente.');
-      return;
-    }
-
-    const materialAntigoIndex = materiais.findIndex(m => m.nome === e.materialNome);
-    const materialAntigo = materiais[materialAntigoIndex];
-    const materialNovo = materiais[novoMaterialIndex];
-
-    // Ajustar estoque: devolver quantidade antiga e subtrair nova
-    materialAntigo.quantidade += e.quantidade; // devolve a quantidade antiga para estoque
-
-    if (materialNovo.quantidade < novaQtd) {
-      alert('Quantidade insuficiente no estoque para a nova edição!');
-      // re-subtrai a antiga para não perder estoque
-      materialAntigo.quantidade -= e.quantidade;
-      return;
-    }
-
-    materialNovo.quantidade -= novaQtd;
-
-    // Atualizar entrega
-    entregas[indexEdicao] = {
-      materialNome: materialNovo.nome,
-      materialIndex: novoMaterialIndex,
-      quantidade: novaQtd,
-      destino: novoDestino,
-      recebedor: novoRecebedor,
-      obs: novaObs,
-      data: e.data
-    };
-
-    salvarMateriais();
-    salvarEntregas();
-    fecharModal();
-    listarEntregas();
-    preencherSelects();
-  }
-
-  // Excluir entrega e devolver estoque
-  function excluirEntrega(i) {
-    if (!confirm('Deseja excluir esta entrega? A quantidade será devolvida ao estoque.')) return;
-    const e = entregas[i];
-    const matIndex = materiais.findIndex(m => m.nome === e.materialNome);
-    if (matIndex >= 0) {
-      materiais[matIndex].quantidade += e.quantidade;
-    }
-    entregas.splice(i, 1);
-    salvarMateriais();
-    salvarEntregas();
-    listarEntregas();
-    preencherSelects();
-  }
-
-  // Gerar PDF com jspdf e autotable
-  function gerarPDF() {
+  <script>
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.setTextColor("#00ff88");
-    doc.text("Relatório de Entregas", 14, 20);
+    const materialSelect = document.getElementById('materialSelect');
+    const form = document.getElementById('deliveryForm');
+    const deliveriesTableBody = document.querySelector('#deliveriesTable tbody');
+    const filterInput = document.getElementById('filterMaterial');
+    const generatePdfBtn = document.getElementById('generatePdfBtn');
+    const goBackBtn = document.getElementById('goBackBtn');
 
-    const linhas = entregas.map(e => [
-      e.materialNome,
-      e.quantidade.toString(),
-      e.destino,
-      e.recebedor,
-      e.obs,
-      e.data
-    ]);
+    let deliveries = [];
 
-    doc.autoTable({
-      head: [["Material", "Quantidade", "Destino", "Recebedor", "Observações", "Data"]],
-      body: linhas,
-      startY: 30,
-      styles: { fillColor: [30, 30, 30], textColor: 240 },
-      headStyles: { fillColor: [0, 255, 136], textColor: 0 },
-      theme: 'grid'
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function loadMaterials() {
+      const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
+      materialSelect.innerHTML = '<option value="" disabled selected>Selecione o material</option>';
+      materiais.forEach(m => {
+        const option = document.createElement('option');
+        option.value = m.nome;
+        option.textContent = `${m.nome} (estoque: ${m.quantidade})`;
+        materialSelect.appendChild(option);
+      });
+      return materiais;
+    }
+
+    function updateMaterialsInStorage(materiais) {
+      localStorage.setItem('materiais', JSON.stringify(materiais));
+    }
+
+    function renderList(filter = '') {
+      deliveriesTableBody.innerHTML = '';
+      const filtered = deliveries.filter(d =>
+        d.material.toLowerCase().includes(filter.toLowerCase())
+      );
+      if (filtered.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.style.textAlign = 'center';
+        td.style.padding = '20px';
+        td.textContent = 'Nenhuma entrega registrada.';
+        tr.appendChild(td);
+        deliveriesTableBody.appendChild(tr);
+        return;
+      }
+      for (const delivery of filtered) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${delivery.material}</td>
+          <td>${delivery.quantity}</td>
+          <td>${delivery.receiver}</td>
+          <td>${delivery.location}</td>
+          <td>${formatDate(delivery.date)}</td>
+        `;
+        deliveriesTableBody.appendChild(tr);
+      }
+    }
+
+    function addOrUpdateDelivery(newDelivery) {
+      const materiais = JSON.parse(localStorage.getItem('materiais')) || [];
+      const matIndex = materiais.findIndex(m => m.nome.toLowerCase() === newDelivery.material.toLowerCase());
+
+      if(matIndex === -1) {
+        alert('Material não encontrado no estoque!');
+        return false;
+      }
+
+      if(materiais[matIndex].quantidade < newDelivery.quantity) {
+        alert(`Estoque insuficiente! Estoque atual: ${materiais[matIndex].quantidade}`);
+        return false;
+      }
+
+      materiais[matIndex].quantidade -= newDelivery.quantity;
+      updateMaterialsInStorage(materiais);
+
+      loadMaterials();
+
+      const idx = deliveries.findIndex(d =>
+        d.material.toLowerCase() === newDelivery.material.toLowerCase() &&
+        d.date === newDelivery.date &&
+        d.receiver.toLowerCase() === newDelivery.receiver.toLowerCase() &&
+        d.location.toLowerCase() === newDelivery.location.toLowerCase()
+      );
+
+      if (idx >= 0) {
+        deliveries[idx].quantity += newDelivery.quantity;
+      } else {
+        deliveries.push(newDelivery);
+      }
+      return true;
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const material = materialSelect.value;
+      const quantity = Number(form.quantity.value);
+      const receiver = form.receiver.value.trim();
+      const location = form.location.value.trim();
+      const date = form.date.value;
+
+      if (!material || quantity <= 0 || !receiver || !location || !date) {
+        alert('Preencha todos os campos corretamente!');
+        return;
+      }
+
+      const success = addOrUpdateDelivery({ material, quantity, receiver, location, date });
+      if(!success) return;
+
+      renderList(filterInput.value);
+
+      form.reset();
+      materialSelect.focus();
     });
 
-    doc.save("relatorio_entregas.pdf");
-  }
+    filterInput.addEventListener('input', () => {
+      renderList(filterInput.value);
+    });
 
-  // Inicializa selects e lista na abertura
-  preencherSelects();
-  listarEntregas();
+    generatePdfBtn.addEventListener('click', () => {
+      if(deliveries.length === 0) {
+        alert('Não há entregas para gerar relatório.');
+        return;
+      }
 
-</script>
+      const doc = new jsPDF();
+
+      doc.setFontSize(18);
+      doc.text("Relatório de Entregas", 14, 20);
+      doc.setFontSize(12);
+      doc.text(`Gerado em: ${formatDate(new Date().toISOString())}`, 14, 28);
+
+      const columns = ["Material", "Quantidade", "Quem Recebeu", "Local", "Data"];
+      const rows = deliveries.map(d => [
+        d.material,
+        d.quantity.toString(),
+        d.receiver,
+        d.location,
+        formatDate(d.date)
+      ]);
+
+      let startY = 35;
+      const lineHeight = 8;
+      const marginLeft = 14;
+
+      columns.forEach((col, i) => {
+        doc.setFont(undefined, 'bold');
+        doc.text(col, marginLeft + i*40, startY);
+      });
+      doc.setFont(undefined, 'normal');
+
+      startY += lineHeight;
+
+      rows.forEach(row => {
+        row.forEach((cell, i) => {
+          doc.text(cell, marginLeft + i*40, startY);
+        });
+        startY += lineHeight;
+        if (startY > 280) {
+          doc.addPage();
+          startY = 20;
+        }
+      });
+
+      doc.save("relatorio_entregas.pdf");
+    });
+
+    goBackBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    loadMaterials();
+    renderList();
+  </script>
+
 </body>
 </html>
