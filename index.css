@@ -7,10 +7,10 @@
       min-height: 100vh;
       overflow-y: auto;
     }
-    h1, h2 { color: #fffefe; margin-bottom: 10px; }
+    h1, h2 { color: #dacbcb; margin-bottom: 10px;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif }
     .container {
-      background-color: #1e1e1e;
-      border: 1px solid #333;
+      background-color: #1f1e1e;
+      border: 1px solid #fcfcfc;
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
@@ -21,10 +21,11 @@
       padding: 10px; margin: 5px 0; width: 100%;
       border-radius: 5px; font-size: 16px;
       border: none;
+      font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
     input, select { background: #2c2c2c; color: #ffffff; }
     button {
-      background: #248032; color: #000;
+      background: #626363; color: #ffffff;
       font-weight: bold; cursor: pointer;
     }
     button:hover { background: #ffffff; color: #000; }
@@ -117,7 +118,7 @@
       margin-top: 10px;
     }
     #btnGerarPDF {
-      background: #00aaff;
+      background: #535557;
       color: #000;
       font-weight: bold;
       cursor: pointer;
@@ -128,28 +129,27 @@
       width: auto;
     }
     #btnGerarPDF:hover {
-      background: #0088cc;
-    }
-   
-    .titulosite {
-       width: 330px;   
-      color: #ffffff;
-      font-size: 2em;
-      margin-bottom: 20px;
-      font-family: 'Poppins', sans-serif;
-      background-color: #203f24;
-      display: inline-flex;
-      align-items: center;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      transition: background-color 0.3s ease; 
+      background: #ffffff;
     }
     .imagemsite {
       width: 200px; height: auto;
       margin-left: 30px;
       vertical-align: middle;
-       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       transition: background-color 0.3s ease; 
+    }
+    .areadeentregas {
+      background-color: #b4beb6;
+      color: #000;
+      font-weight: bold;     
+      font-family: 'Poppins', sans-serif;
+      padding: 10px 20px;
+      border: none;
+       width: 200px; height: 70px;
+      margin-left: 1100px;
+      vertical-align: middle;
+      cursor: pointer;
+       border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      text-align: center;
     }
